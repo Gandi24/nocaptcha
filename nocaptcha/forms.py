@@ -30,8 +30,6 @@ class EmailFieldHoneypot(forms.EmailField, Honeypot):
 def generate_clean_subfield(klass, new_fieldname):
     def clean_subfield():
         data = klass.cleaned_data.get(new_fieldname)
-        if not data:
-            raise ValidationError("This field is required.")
         klass.cleaned_data[klass.md5_dict[new_fieldname]] = data
         try:
             clean_subfield = getattr(klass, "clean_%s" %klass.md5_dict[new_fieldname])
@@ -58,12 +56,11 @@ class NoCaptchaForm(forms.Form):
             raise forms.ValidationError("Please, fill the form again.")
         return timestamp
 
-    def __init__(self, data=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(NoCaptchaForm, self).__init__(*args, **kwargs)
         self.md5_dict = {}
         keyOrder = []
 
-        self.data = data or {}
         if self.data:
             self.creation_time = self.data.get('timestamp')
         else:
