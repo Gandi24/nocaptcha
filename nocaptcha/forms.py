@@ -65,7 +65,8 @@ class NoCaptchaForm(forms.Form):
 
         self.data = data or {}
         if self.data:
-            self.creation_time = self.data.get('timestamp')
+            prefixed_name_timestamp = self.add_prefix('timestamp')
+            self.creation_time = self.data.get(prefixed_name_timestamp)
         else:
             self.creation_time = time.time()
 
